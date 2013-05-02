@@ -31,8 +31,14 @@ class User
 		users.map {|user| User.new(user)}.first
 	end
 
+  def self.user_ids
+		query = <<-SQL
+		  SELECT users.id
+			  FROM users
+			SQL
 
-
+		Databaser.instance.execute(query).map { |id_hash| id_hash.values.first}
+	end
 
 	# INSTANCE METHODS
 
@@ -88,7 +94,11 @@ class User
 	end
 
 	def save
-		self.insert
+	  if User.user_ids.include?(id)
+		  self.update
+		else
+			self.insert
+		end
 	end
 
 	def insert
@@ -105,7 +115,13 @@ class User
 	def update
 		update = <<-SQL
 			UPDATE users
-			   SET
+			   SET fname = :fname, lname = :lname
+			 WHERE users.id = :id
+			SQL
+
+			opts = {'id' => id, 'fname' => fname, 'lname' => lname}
+			Databaser.instance.execute(update, opts)
+			nil
 	end
 
 
