@@ -6,6 +6,8 @@ require_relative 'q_like'
 
 class User
 
+  attr_reader :id, :fname, :lname
+
 	def self.find_by_id(id)
 	  query = <<-SQL
 		  SELECT *
@@ -14,7 +16,7 @@ class User
 			SQL
 
 		users = Databaser.instance.execute(query, id)
-		users.map { |user| User.new(user) }
+		users.map { |user| User.new(user) }.first
 	end
 
 	def self.find_by_name(fname, lname)
@@ -26,7 +28,7 @@ class User
 
 		users = Databaser.instance.execute(query, fname, lname)
 
-		users.map {|user| User.new(user)}
+		users.map {|user| User.new(user)}.first
 	end
 
 
@@ -48,7 +50,7 @@ class User
 			 WHERE user_id = ?
 		  SQL
 
-		questions = Databaser.instance.execute(query, @id)
+		questions = Databaser.instance.execute(query, id)
 
 		questions.map {|question| Question.new(question) }
 	end
@@ -60,29 +62,51 @@ class User
 			 WHERE user_id = ?
 		  SQL
 
-	  replies = Databaser.instance.execute(query, @id)
+	  replies = Databaser.instance.execute(query, id)
 
 		replies.map { |reply| Reply.new(reply) }
 	end
 
   def followed_questions
-    QFollower.followed_questions_for_user_id(@id)
+    QFollower.followed_questions_for_user_id(id)
 	end
 
 	def liked_questions
-		QuestionLike.liked_questions_for_user_id(@id)
+		QuestionLike.liked_questions_for_user_id(id)
 	end
 
   def average_karma
     query = <<-SQL
-		  SELECT CAST((COUNT(q_likes.user_id)) AS REAL) /COUNT(DISTINCT(q_likes.question_id))
-			  FROM q_likes
-				JOIN questions
+		  SELECT CAST((COUNT(q_likes.user_id)) AS REAL) /COUNT(DISTINCT(questions.id))
+			  FROM questions
+        LEFT OUTER JOIN q_likes
 				  ON q_likes.question_id = questions.id
 			 WHERE questions.user_id = ?
 			SQL
 
-		Databaser.instance.execute(query, @id).first
+		Databaser.instance.execute(query, id).first
 	end
+
+	def save
+		self.insert
+	end
+
+	def insert
+		insert = <<-SQL
+		  INSERT INTO users ('id', 'fname', 'lname')
+			     VALUES (:id, :fname, :lname)
+			SQL
+
+		opts = {'id' => id, 'fname' => fname, 'lname' => lname}
+		Databaser.instance.execute(insert, opts)
+		nil
+	end
+
+	def update
+		update = <<-SQL
+			UPDATE users
+			   SET
+	end
+
 
 end
