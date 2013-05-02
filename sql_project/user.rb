@@ -1,18 +1,10 @@
 require_relative 'databaser'
+require_relative 'question'
+require_relative 'reply'
+require_relative 'q_follower'
+require_relative 'q_like'
 
 class User
-
-	# def self.insert_new_user(fname,lname)
-	#     insert = <<-SQL
-	# 	  INSERT INTO users ('fname', 'lname')
-	# 		     VALUES (?, ?)
-	# 		SQL
-	#
-	#   Databaser.instance.execute(insert, fname, lname)
-	# 	self
-	# end
-
-	# CLASS METHODS
 
 	def self.find_by_id(id)
 	  query = <<-SQL
@@ -73,6 +65,9 @@ class User
 		replies.map { |reply| Reply.new(reply) }
 	end
 
+  def followed_questions
+    QFollower.followed_questions_for_user_id(@id)
+	end
 
 
 end

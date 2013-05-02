@@ -1,4 +1,5 @@
 require_relative 'databaser'
+require_relative 'user'
 
 class Reply
 
@@ -76,5 +77,18 @@ class Reply
 
 	  Reply.new(reply) if reply
 	end
+
+	def child_replies
+		query = <<-SQL
+			SELECT *
+			FROM replies
+			WHERE replies.reply_id = ?
+		SQL
+
+		replies = Databaser.instance.execute(query, @id)
+
+		replies.map {|reply| Reply.new(reply)}
+	end
+
 
 end

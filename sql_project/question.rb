@@ -1,4 +1,5 @@
 require_relative 'databaser'
+require_relative 'user'
 
 class Question
 
@@ -55,6 +56,9 @@ class Question
 		replies.map {|reply| Reply.new(reply)}
 	end
 
+  def followers
+		QFollower.followers_for_question_id(@id)
+	end
 
 
 end
