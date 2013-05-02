@@ -3,12 +3,12 @@ CREATE TABLE users(
 	id INTEGER PRIMARY KEY,
 
   fname VARCHAR(255) NOT NULL,
-  lname VARCHAR(255) NOT NULL,
+  lname VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE questions(
 
-	id INTEGER PRIMARY KEY
+	id INTEGER PRIMARY KEY,
 
   title   VARCHAR(255) NOT NULL,
 	body    TEXT,
@@ -19,7 +19,7 @@ CREATE TABLE questions(
 
 CREATE TABLE q_likes(
 
-	id INTEGER PRIMARY KEY
+	id INTEGER PRIMARY KEY,
 
 	user_id     INTEGER NOT NULL,
 	question_id INTEGER NOT NULL,
@@ -30,12 +30,12 @@ CREATE TABLE q_likes(
 
 CREATE TABLE replies(
 
-	id INTEGER PRIMARY KEY
+	id INTEGER PRIMARY KEY,
 
 	question_id INTEGER NOT NULL,
 	user_id     INTEGER NOT NULL,
 	reply_id    INTEGER,
-	body        VARCHAR(255)
+	body        VARCHAR(255),
 
 	/*Might need foreign key for r_id ??? */
   FOREIGN KEY(question_id) REFERENCES questions(id),
@@ -44,7 +44,7 @@ CREATE TABLE replies(
 
 CREATE TABLE q_followers(
 
-	id INTEGER PRIMARY KEY
+	id INTEGER PRIMARY KEY,
 
 	question_id INTEGER NOT NULL,
 	user_id     INTEGER NOT NULL,
@@ -75,7 +75,7 @@ INSERT INTO replies ('question_id', 'user_id', 'reply_id', 'body')
 						(2, 2, 2, 'maybe he didnt mean to say anything dumbass'),
 					  (3, 1, NULL, 'reply3');
 
-INSERT INTO q_followers('questions_id', 'user_id')
+INSERT INTO q_followers('question_id', 'user_id')
      VALUES (3,1), (2,1), (1,1), (1,2), (2,2);
 
 
