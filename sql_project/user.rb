@@ -13,8 +13,8 @@ class User
 			WHERE users.id = ?
 			SQL
 
-		user = Databaser.instance.execute(query, id)[0]
-		User.new(user)
+		users = Databaser.instance.execute(query, id)
+		users.map { |user| User.new(user) }
 	end
 
 	def self.find_by_name(fname, lname)
@@ -69,5 +69,20 @@ class User
     QFollower.followed_questions_for_user_id(@id)
 	end
 
+	def liked_questions
+		QuestionLike.liked_questions_for_user_id(@id)
+	end
+
+  def average_karma
+    query = <<-SQL
+		  SELECT CAST((COUNT(q_likes.user_id)) AS REAL) /COUNT(DISTINCT(q_likes.question_id))
+			  FROM q_likes
+				JOIN questions
+				  ON q_likes.question_id = questions.id
+			 WHERE questions.user_id = ?
+			SQL
+
+		Databaser.instance.execute(query, @id).first
+	end
 
 end
